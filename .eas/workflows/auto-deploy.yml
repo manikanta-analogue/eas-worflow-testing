@@ -1,5 +1,5 @@
 
-name: Automatic EAS Build or Update
+name: Automatic EAS Preview Build or Update
 
 on:
   push:
@@ -17,7 +17,8 @@ jobs:
     type: get-build
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
-      profile: production
+      profile: preview
+      channel: preview
       platform: android
 
   get_ios_build:
@@ -26,41 +27,42 @@ jobs:
     type: get-build
     params:
       fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
-      profile: production
+      profile: preview
+      channel: preview
       platform: ios
 
   build_android:
-    name: Build Android
+    name: Build Android Preview
     needs: [get_android_build]
     if: ${{ !needs.get_android_build.outputs.build_id }}
     type: build
     params:
       platform: android
-      profile: production
+      profile: preview
 
   build_ios:
-    name: Build iOS
+    name: Build iOS Preview
     needs: [get_ios_build]
     if: ${{ !needs.get_ios_build.outputs.build_id }}
     type: build
     params:
       platform: ios
-      profile: production
+      profile: preview
 
   update_android:
-    name: Publish Android OTA update
+    name: Publish Android Preview Update
     needs: [get_android_build]
     if: ${{ needs.get_android_build.outputs.build_id }}
     type: update
     params:
-      branch: production
+      branch: preview
       platform: android
 
   update_ios:
-    name: Publish iOS OTA update
+    name: Publish iOS Preview Update
     needs: [get_ios_build]
     if: ${{ needs.get_ios_build.outputs.build_id }}
     type: update
     params:
-      branch: production
+      branch: preview
       platform: ios
